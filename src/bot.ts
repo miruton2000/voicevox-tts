@@ -1,0 +1,118 @@
+import { createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel, StreamType } from "@discordjs/voice";
+import { Client, GatewayIntentBits, Message } from "discord.js";
+import { Readable } from "stream";
+import { request } from "./request";
+import { AudioQueryFromPreset, Synthesis, TtsOptions } from "./types";
+
+const player = createAudioPlayer();
+
+// VOICEVOXで音声を生成する関数
+const generateVoice = async (text: string, preset_id: number, options: TtsOptions) => {
+  const portMounted = request(options.port);
+  const reqAudioQuery: AudioQueryFromPreset = {
+    method: 'POST',
+    url: 'audio_query_from_preset',
+    parameters: {
+      text,
+      preset_id,
+    },
+    body: undefined,
+  };
+
+  const audioQuery = await portMounted(reqAudioQuery);
+  const audioQueryJson = await audioQuery.json();
+
+  const reqSynthesis: Synthesis = {
+    method: 'POST',
+    url: 'synthesis',
+    parameters: {
+      speaker: options.speaker,
+    },
+    body: audioQueryJson,
+  };
+
+  const synthesisRes = await portMounted(reqSynthesis);
+  if (!synthesisRes.body) {
+    return null;
+  }
+
+  // WebのReadableStreamをNode.jsのReadableに変換
+  return createAudioResource(
+    Readable.fromWeb(synthesisRes.body as any),
+    {
+      inputType: StreamType.Arbitrary,
+    }
+  );
+};
+
+export const initializeBot = (token: string | undefined, options: TtsOptions) => {
+  if (token === undefined) {
+    throw new Error('token undefined.');
+  }
+
+  const client = new Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+      GatewayIntentBits.GuildVoiceStates,
+    ],
+  });
+
+  client.on('messageCreate',
+    async (message: Message) => {
+      if (message.author.bot) {
+        return;
+      }
+
+      // !join コマンドでボイスチャンネルに参加
+      if (message.content === '!join') {
+        const member = message.member;
+        if (message.author.id !== options.ownerId) {
+          return message.reply('オーナー以外の言うことは聞きません');
+        }
+
+        if (!member?.voice.channel) {
+          return message.reply('先にボイスチャンネルに入ってね！');
+        }
+
+        const connection = joinVoiceChannel({
+          channelId: member.voice.channel.id,
+          guildId: message.guildId!,
+          adapterCreator: message.guild!.voiceAdapterCreator,
+        });
+
+        connection.subscribe(player);
+        return message.reply('ずんだもん、参上なのだ！');
+      }
+
+      if (message.content === '!leave') {
+        if (message.author.id !== options.ownerId) {
+          return message.reply('オーナー以外の言うことは聞きません');
+        }
+        
+        const connection = getVoiceConnection(message.guildId!);
+        connection?.destroy();
+        return message.reply('さらばなのだ！');
+      }
+
+      // それ以外のメッセージは読み上げる（接続中のみ）
+      const botVoiceChannel = message.guild!.members.me!.voice;
+      if (
+        message.channelId === botVoiceChannel.channelId &&
+        message.author.id === options.ownerId &&
+        message.content &&
+        !message.content.startsWith('!')
+      ) {
+        const resource = await generateVoice(message.content, 0, options);
+        if (resource) {
+          player.play(resource);
+        }
+      }
+    }
+  );
+
+  client.login(token);
+
+  return client;
+};

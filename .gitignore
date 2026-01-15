@@ -1,0 +1,4 @@
+node_modules
+voicevox-engine
+.env
+ffmpeg
