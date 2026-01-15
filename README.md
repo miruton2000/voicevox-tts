@@ -13,7 +13,9 @@ Windows以外の環境では動作確認を行っていないのであしから�
 
 ## Install
 
-1. [voicevox_engine::Releases](https://github.com/VOICEVOX/voicevox_engine/releases)からエンジンをダウンロードし、`voicevox-engine`としてリポジトリ直下へ配置
+### 1. VOICEVOX Engine の導入
+
+[voicevox_engine::Releases](https://github.com/VOICEVOX/voicevox_engine/releases)からエンジンをダウンロードし、`voicevox-engine`としてリポジトリ直下へ配置
 
 フォルダ構成例:
 
@@ -28,7 +30,7 @@ voicevox-tts (root)
     - ...etc
 ```
 
-2. `.env`をリポジトリ直下へ作成
+### 2. `.env`をリポジトリ直下へ作成
 
 `.env`記述例:
 
@@ -44,7 +46,7 @@ OWNER_ID=your-user-id # 必須 : TTSを行いたいユーザーのID
 - ユーザー設定 -> 詳細設定 -> 開発者モード をオンにする
 - 自分のアイコンをクリック -> ユーザーIDをコピーを選択
 
-3. アプリケーションの実行
+### 3. アプリケーションの実行
 
 ```bash
 # 依存関係のインストール (初回のみ)
@@ -56,7 +58,7 @@ npm run do
 
 ## Usage
 
-1. BotをDiscordサーバへ招待する
+### 1. BotをDiscordサーバへ招待する
 
 - Discord開発者ページからApplicationを作成 (すでにある場合はそれを選択)
 - Botのページで`Presense Intent`, `Server Members Intent`, `Message Content Intent`をそれぞれオンにする
@@ -64,14 +66,14 @@ npm run do
 - `Bot Permissions`から`Send Messages`, `Read Message History`, `Connect`, `Speak`をオンにする
 - `Generated URL`をコピーし、自分のサーバへ招待するならそれを開いて、追加したいサーバを選択。自分のサーバでない場合は管理者にリンクから追加してもらうようお願いする
 
-2. ボイスチャットへ追加する
+### 2. ボイスチャットへ追加する
 
 - `npm run do`でbotを起動する
 - ボイスチャットへ参加する
 - 参加したボイスチャンネル内のテキストチャンネルで`!join`を実行するとbotが入ってくる
 - その状態でテキストチャンネルへ書き込みを行うと、書き込んだ内容が読み上げられる
 
-3. ボイスチャットからの退出
+### 3. ボイスチャットからの退出
 
 - `!leave`でbotを退出させることが出来る
 - botが起動しているターミナルで`Ctrl + C`を実行するとbotが終了する (この時、botを退出させていない場合は時間がたつと勝手に抜ける)
