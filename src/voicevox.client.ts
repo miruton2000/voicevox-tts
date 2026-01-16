@@ -1,6 +1,8 @@
 import { createRequestor, withJson } from "./http.request";
 import type { AudioQuery, PostAudioQueryFromPresetParams, PostAudioQueryParams, PostInitializeSpeakerParams, PostSynthesisParams, Preset } from "./voicevox.types";
 
+const asJson = <T>(res: Response) => res.json() as Promise<T>;
+
 //#region API
 export const createClient = (baseUrl: string) => {
   const requestor = createRequestor(baseUrl);
@@ -8,12 +10,12 @@ export const createClient = (baseUrl: string) => {
   return {
     postAudioQuery: (params: PostAudioQueryParams) => (
       requestor.post('/audio_query', params)()
-      .then(res => res.json() as Promise<AudioQuery>)
+      .then(asJson<AudioQuery>)
     ),
 
     postAudioQueryFromPreset: (params: PostAudioQueryFromPresetParams)=> (
       requestor.post('/audio_query_from_preset', params)()
-      .then(res => res.json() as Promise<AudioQuery>)
+      .then(asJson<AudioQuery>)
     ),
 
     postSynthesis: (params: PostSynthesisParams, body: AudioQuery) => (
@@ -34,17 +36,17 @@ export const createClient = (baseUrl: string) => {
 
     getPresets: () => (
       requestor.get('/presets')()
-      .then(res => res.json() as Promise<Preset[]>)
+      .then(asJson<Preset[]>)
     ),
 
     postAddPreset: (body: Preset) => (
       requestor.post('/add_preset')(withJson(body))
-      .then(res => res.json() as Promise<number>)
+      .then(asJson<number>)
     ),
 
     postUpdatePreset: (body: Preset) => (
       requestor.post('/update_preset')(withJson(body))
-      .then(res => res.json() as Promise<number>)
+      .then(asJson<number>)
     ),
   }
 };
