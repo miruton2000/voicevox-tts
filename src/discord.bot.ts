@@ -1,51 +1,31 @@
 import { createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel, StreamType } from "@discordjs/voice";
 import { Client, GatewayIntentBits, Message } from "discord.js";
 import { Readable } from "stream";
-import { request } from "./request";
-import { AudioQueryFromPreset, Synthesis, TtsOptions } from "./types";
+import { TtsOptions } from "./types";
+import { VoicevoxClient } from "./voicevox.client";
 
 const player = createAudioPlayer();
 
 // VOICEVOXで音声を生成する関数
-const generateVoice = async (text: string, preset_id: number, options: TtsOptions) => {
-  const portMounted = request(options.port);
-  const reqAudioQuery: AudioQueryFromPreset = {
-    method: 'POST',
-    url: 'audio_query_from_preset',
-    parameters: {
-      text,
-      preset_id,
-    },
-    body: undefined,
-  };
+const generateVoice = async (text: string, voicevox: VoicevoxClient, preset_id: number, options: TtsOptions) => {
+  const audioQuery = await voicevox.postAudioQueryFromPreset({
+    text,
+    preset_id,
+  });
 
-  const audioQuery = await portMounted(reqAudioQuery);
-  const audioQueryJson = await audioQuery.json();
-
-  const reqSynthesis: Synthesis = {
-    method: 'POST',
-    url: 'synthesis',
-    parameters: {
-      speaker: options.speaker,
-    },
-    body: audioQueryJson,
-  };
-
-  const synthesisRes = await portMounted(reqSynthesis);
-  if (!synthesisRes.body) {
-    return null;
-  }
+  const wav = await voicevox.postSynthesis(
+    { speaker: options.speaker },
+    audioQuery,
+  );
 
   // WebのReadableStreamをNode.jsのReadableに変換
   return createAudioResource(
-    Readable.fromWeb(synthesisRes.body as any),
-    {
-      inputType: StreamType.Arbitrary,
-    }
+    Readable.fromWeb(wav as any),
+    { inputType: StreamType.Arbitrary },
   );
 };
 
-export const initializeBot = (token: string | undefined, options: TtsOptions) => {
+export const initializeBot = (token: string | undefined, voicevox: VoicevoxClient, options: TtsOptions) => {
   if (token === undefined) {
     throw new Error('token undefined.');
   }
@@ -104,7 +84,7 @@ export const initializeBot = (token: string | undefined, options: TtsOptions) =>
         message.content &&
         !message.content.startsWith('!')
       ) {
-        const resource = await generateVoice(message.content, 0, options);
+        const resource = await generateVoice(message.content, voicevox, 0, options);
         if (resource) {
           player.play(resource);
         }

@@ -1,8 +1,9 @@
 import { ChildProcess, spawn } from "node:child_process";
 import waitOn from 'wait-on';
 import PRESET from './preset.json' with { key: "json" };
-import { request } from "./request";
-import { AddPreset, InitializeSpeaker, Preset, Presets, TtsOptions, UpdatePreset } from "./types";
+import { TtsOptions } from "./types";
+import { createClient } from "./voicevox.client";
+import { Preset } from "./voicevox.types";
 
 const preset = PRESET as Preset;
 
@@ -43,47 +44,23 @@ const startEngine = (port: number) => {
 export const initializeEngine = async (options: TtsOptions) => {
   await startEngine(options.port);
   
-  const portMounted = request(options.port);
+  const client = createClient(`http://localhost:${options.port}`);
 
   // Preset 取得
-  const reqPresets: Presets = {
-    method: 'GET',
-    url: 'presets',
-    parameters: undefined,
-    body: undefined,
-  };
-
-  const resPresets = await portMounted(reqPresets);
-  const presets = await resPresets.json() as Preset[];
+  const presets = await client.getPresets();
 
   // Preset 設定
   if (presets.some((p) => p.id === preset.id)) {
-    const req: UpdatePreset = {
-      method: 'POST',
-      url: 'update_preset',
-      parameters: undefined,
-      body: preset
-    };
-    portMounted(req);
+    await client.postUpdatePreset(preset);
   }
   else {
-    const req: AddPreset = {
-      method: 'POST',
-      url: 'add_preset',
-      parameters: undefined,
-      body: preset
-    };
-    portMounted(req);
+    await client.postAddPreset(preset);
   }
 
   // Speaker 初期化
-  const reqInisializeSpeaker: InitializeSpeaker = {
-    method: 'POST',
-    url: 'initialize_speaker',
-    parameters: {
-      speaker: options.speaker,
-    },
-    body: undefined,
-  };
-  portMounted(reqInisializeSpeaker);
+  await client.postInitializeSpeaker({
+    speaker: options.speaker,
+  });
+
+  return client;
 };

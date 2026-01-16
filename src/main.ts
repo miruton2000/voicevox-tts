@@ -1,6 +1,6 @@
-import { initializeBot } from "./bot";
-import { initializeEngine } from "./engine";
+import { initializeBot } from "./discord.bot";
 import { TtsOptions } from "./types";
+import { initializeEngine } from "./voicevox.engine";
 
 const getOptions = (): TtsOptions => ({
   port: Number(process.env.ENGINE_PORT ?? "50021"),
@@ -10,8 +10,8 @@ const getOptions = (): TtsOptions => ({
 
 const init = async () => {
   const options = getOptions();
-  await initializeEngine(options);
-  initializeBot(process.env.DISCORD_TOKEN, options);
+  const client = await initializeEngine(options);
+  initializeBot(process.env.DISCORD_TOKEN, client, options);
 };
 
 init();
