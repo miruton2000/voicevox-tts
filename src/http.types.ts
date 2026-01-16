@@ -12,3 +12,5 @@ export type HttpMethod = (
 );
 
 export type HttpQueryParams = Record<string, QueryParamValue>;
+
+export type OmitRequestInit<K extends keyof RequestInit = never> = Omit<RequestInit, 'method' | K>;
