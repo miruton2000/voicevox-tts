@@ -3,21 +3,21 @@ import type { AudioQuery, PostAudioQueryFromPresetParams, PostAudioQueryParams, 
 
 //#region API
 export const createClient = (baseUrl: string) => {
-  const requester = createRequestor(baseUrl);
+  const requestor = createRequestor(baseUrl);
 
   return {
     postAudioQuery: (params: PostAudioQueryParams) => (
-      requester.post('/audio_query', params)()
+      requestor.post('/audio_query', params)()
       .then(res => res.json() as Promise<AudioQuery>)
     ),
 
     postAudioQueryFromPreset: (params: PostAudioQueryFromPresetParams)=> (
-      requester.post('/audio_query_from_preset', params)()
+      requestor.post('/audio_query_from_preset', params)()
       .then(res => res.json() as Promise<AudioQuery>)
     ),
 
     postSynthesis: (params: PostSynthesisParams, body: AudioQuery) => (
-      requester.post('/synthesis', params)(withJson(body))
+      requestor.post('/synthesis', params)(withJson(body))
       .then(res => {
         if (res.body === null) {
           throw new Error('body is null');
@@ -28,22 +28,22 @@ export const createClient = (baseUrl: string) => {
     ),
 
     postInitializeSpeaker: (params: PostInitializeSpeakerParams) => (
-      requester.post('/initialize_speaker', params)()
+      requestor.post('/initialize_speaker', params)()
       .then(_ => {})
     ),
 
     getPresets: () => (
-      requester.get('/presets')()
+      requestor.get('/presets')()
       .then(res => res.json() as Promise<Preset[]>)
     ),
 
     postAddPreset: (body: Preset) => (
-      requester.post('/add_preset')(withJson(body))
+      requestor.post('/add_preset')(withJson(body))
       .then(res => res.json() as Promise<number>)
     ),
 
     postUpdatePreset: (body: Preset) => (
-      requester.post('/update_preset')(withJson(body))
+      requestor.post('/update_preset')(withJson(body))
       .then(res => res.json() as Promise<number>)
     ),
   }

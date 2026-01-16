@@ -41,22 +41,22 @@ const createMethodMapper = <K extends keyof RequestInit>(method: HttpMethod): Ht
 );
 
 export const createRequestor = (baseUrl: string) => {
-  const requesterBase = requestBase(baseUrl);
+  const requestorBase = requestBase(baseUrl);
 
   return {
-    get     : requesterBase(createMethodMapper<'body'>('GET')),
-    head    : requesterBase(createMethodMapper('HEAD')),
-    post    : requesterBase(createMethodMapper('POST')),
-    put     : requesterBase(createMethodMapper('PUT')),
-    delete  : requesterBase(createMethodMapper('DELETE')),
-    connect : requesterBase(createMethodMapper('CONNECT')),
-    options : requesterBase(createMethodMapper('OPTIONS')),
-    trace   : requesterBase(createMethodMapper('TRACE')),
-    patch   : requesterBase(createMethodMapper('PATCH')),
+    get     : requestorBase(createMethodMapper<'body'>('GET')),
+    head    : requestorBase(createMethodMapper('HEAD')),
+    post    : requestorBase(createMethodMapper('POST')),
+    put     : requestorBase(createMethodMapper('PUT')),
+    delete  : requestorBase(createMethodMapper('DELETE')),
+    connect : requestorBase(createMethodMapper('CONNECT')),
+    options : requestorBase(createMethodMapper('OPTIONS')),
+    trace   : requestorBase(createMethodMapper('TRACE')),
+    patch   : requestorBase(createMethodMapper('PATCH')),
   };
 };
 
-export type HttpRequester = ReturnType<typeof createRequestor>;
+export type HttpRequestor = ReturnType<typeof createRequestor>;
 
 export const withJson = <T>(json: T) => ({
   headers: { 'Content-Type': 'application/json' },
