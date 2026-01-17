@@ -74,9 +74,7 @@ export const initializeBot = (token: string | undefined, ownerId: string | undef
           { inputType: StreamType.Arbitrary },
         );
 
-        if (resource) {
-          player.play(resource);
-        }
+        player.play(resource);
       }
     }
   );
