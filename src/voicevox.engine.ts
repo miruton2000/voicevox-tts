@@ -6,8 +6,6 @@ import { createVoicevoxEndpoint } from "./voicevox.endpoint";
 import PRESET from './voicevox.preset.json' with { key: "json" };
 import { Preset } from "./voicevox.types";
 
-const preset = PRESET as Preset;
-
 const startEngine = (port: number) => {
   const child = spawn(
     'voicevox-engine/run.exe',
@@ -43,6 +41,7 @@ const startEngine = (port: number) => {
 };
 
 export const initializeEngine = async (port: number) => {
+  const preset = PRESET as Preset;
   await startEngine(port);
   
   const application = createVoicevoxApplication(
