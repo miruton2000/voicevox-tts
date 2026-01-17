@@ -1,33 +1,17 @@
 import { createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel, StreamType } from "@discordjs/voice";
 import { Client, GatewayIntentBits, Message } from "discord.js";
 import { Readable } from "stream";
-import { TtsOptions } from "./ttsOptions";
-import { VoicevoxEndpoint } from "./voicevox.endpoint";
+import { VoicevoxApplication } from "./voicevox.application";
 
 const player = createAudioPlayer();
 
-// VOICEVOXで音声を生成する関数
-const generateVoice = async (text: string, voicevox: VoicevoxEndpoint, preset_id: number, options: TtsOptions) => {
-  const audioQuery = await voicevox.postAudioQueryFromPreset({
-    text,
-    preset_id,
-  });
-
-  const wav = await voicevox.postSynthesis(
-    { speaker: options.speaker },
-    audioQuery,
-  );
-
-  // WebのReadableStreamをNode.jsのReadableに変換
-  return createAudioResource(
-    Readable.fromWeb(wav as any),
-    { inputType: StreamType.Arbitrary },
-  );
-};
-
-export const initializeBot = (token: string | undefined, voicevox: VoicevoxEndpoint, options: TtsOptions) => {
+export const initializeBot = (token: string | undefined, ownerId: string | undefined, voicevox: VoicevoxApplication) => {
   if (token === undefined) {
     throw new Error('token undefined.');
+  }
+
+  if (ownerId === undefined) {
+    throw new Error('ownerId undefined.');
   }
 
   const client = new Client({
@@ -48,7 +32,7 @@ export const initializeBot = (token: string | undefined, voicevox: VoicevoxEndpo
       // !join コマンドでボイスチャンネルに参加
       if (message.content === '!join') {
         const member = message.member;
-        if (message.author.id !== options.ownerId) {
+        if (message.author.id !== ownerId) {
           return message.reply('オーナー以外の言うことは聞きません');
         }
 
@@ -67,7 +51,7 @@ export const initializeBot = (token: string | undefined, voicevox: VoicevoxEndpo
       }
 
       if (message.content === '!leave') {
-        if (message.author.id !== options.ownerId) {
+        if (message.author.id !== ownerId) {
           return message.reply('オーナー以外の言うことは聞きません');
         }
         
@@ -80,11 +64,16 @@ export const initializeBot = (token: string | undefined, voicevox: VoicevoxEndpo
       const botVoiceChannel = message.guild!.members.me!.voice;
       if (
         message.channelId === botVoiceChannel.channelId &&
-        message.author.id === options.ownerId &&
+        message.author.id === ownerId &&
         message.content &&
         !message.content.startsWith('!')
       ) {
-        const resource = await generateVoice(message.content, voicevox, 0, options);
+        const wav = await voicevox.speak(message.content);
+        const resource = createAudioResource(
+          Readable.fromWeb(wav as any),
+          { inputType: StreamType.Arbitrary },
+        );
+
         if (resource) {
           player.play(resource);
         }
