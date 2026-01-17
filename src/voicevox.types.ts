@@ -25,6 +25,10 @@ export type PostInitializeSpeakerParams = {
   core_version?: string;
 };
 
+export type GetSpeakersParams = {
+  core_version?: string;
+};
+
 //#endregion
 
 //#region Body Schema
@@ -43,6 +47,20 @@ export type Preset = {
   postPhonemeLength: number;
   pauseLength?: number;
   pauseLengthScale?: number;
+};
+
+export type Speaker = {
+  name: string;
+  speaker_uuid: string;
+  styles: {
+    name: string;
+    id: number;
+    type: 'talk' | 'singing_teacher' | 'frame_decode' | 'sing';
+  }[];
+  version: string;
+  supported_features: {
+    parmitted_synthesis_morphing: 'ALL' | 'SELF_ONLY' | 'NOTHING';
+  }
 };
 
 //#endregion

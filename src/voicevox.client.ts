@@ -1,5 +1,5 @@
 import { createRequestor, withJson } from "./http.request";
-import type { AudioQuery, PostAudioQueryFromPresetParams, PostAudioQueryParams, PostInitializeSpeakerParams, PostSynthesisParams, Preset } from "./voicevox.types";
+import type { AudioQuery, GetSpeakersParams, PostAudioQueryFromPresetParams, PostAudioQueryParams, PostInitializeSpeakerParams, PostSynthesisParams, Preset, Speaker } from "./voicevox.types";
 
 const asJson = <T>(res: Response) => res.json() as Promise<T>;
 
@@ -48,6 +48,11 @@ export const createClient = (baseUrl: string) => {
       requestor.post('/update_preset')(withJson(body))
       .then(asJson<number>)
     ),
+
+    getSpeakers: (params: GetSpeakersParams) => (
+      requestor.get('/speakers', params)()
+      .then(asJson<Speaker[]>)
+    )
   }
 };
 
