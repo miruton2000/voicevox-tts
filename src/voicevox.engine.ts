@@ -41,7 +41,6 @@ const startEngine = (port: number) => {
 };
 
 export const initializeEngine = async (port: number) => {
-  const preset = PRESET as Preset;
   await startEngine(port);
   
   const application = createVoicevoxApplication(
@@ -50,7 +49,7 @@ export const initializeEngine = async (port: number) => {
     )
   );
 
-  await application.registerPreset(preset);
+  await application.registerPreset(PRESET as Preset);
   await application.initializeSpeaker();
 
   return application;
