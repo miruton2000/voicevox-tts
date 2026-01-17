@@ -4,7 +4,7 @@ import type { AudioQuery, GetSpeakersParams, PostAudioQueryFromPresetParams, Pos
 const asJson = <T>(res: Response) => res.json() as Promise<T>;
 
 //#region API
-export const createClient = (baseUrl: string) => {
+export const createVoicevoxEndpoint = (baseUrl: string) => {
   const requestor = createRequestor(baseUrl);
 
   return {
@@ -56,6 +56,6 @@ export const createClient = (baseUrl: string) => {
   }
 };
 
-export type VoicevoxClient = ReturnType<typeof createClient>;
+export type VoicevoxEndpoint = ReturnType<typeof createVoicevoxEndpoint>;
 
 //#endregion

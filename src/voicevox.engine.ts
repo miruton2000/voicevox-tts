@@ -1,7 +1,7 @@
 import { ChildProcess, spawn } from "node:child_process";
 import waitOn from 'wait-on';
 import { TtsOptions } from "./ttsOptions";
-import { createClient } from "./voicevox.client";
+import { createVoicevoxEndpoint } from "./voicevox.client";
 import PRESET from './voicevox.preset.json' with { key: "json" };
 import { Preset } from "./voicevox.types";
 
@@ -44,23 +44,23 @@ const startEngine = (port: number) => {
 export const initializeEngine = async (options: TtsOptions) => {
   await startEngine(options.port);
   
-  const client = createClient(`http://localhost:${options.port}`);
+  const endpoint = createVoicevoxEndpoint(`http://localhost:${options.port}`);
 
   // Preset 取得
-  const presets = await client.getPresets();
+  const presets = await endpoint.getPresets();
 
   // Preset 設定
   if (presets.some((p) => p.id === preset.id)) {
-    await client.postUpdatePreset(preset);
+    await endpoint.postUpdatePreset(preset);
   }
   else {
-    await client.postAddPreset(preset);
+    await endpoint.postAddPreset(preset);
   }
 
   // Speaker 初期化
-  await client.postInitializeSpeaker({
+  await endpoint.postInitializeSpeaker({
     speaker: options.speaker,
   });
 
-  return client;
+  return endpoint;
 };

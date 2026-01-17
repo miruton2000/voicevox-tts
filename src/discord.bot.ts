@@ -2,12 +2,12 @@ import { createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceCh
 import { Client, GatewayIntentBits, Message } from "discord.js";
 import { Readable } from "stream";
 import { TtsOptions } from "./ttsOptions";
-import { VoicevoxClient } from "./voicevox.client";
+import { VoicevoxEndpoint } from "./voicevox.client";
 
 const player = createAudioPlayer();
 
 // VOICEVOXで音声を生成する関数
-const generateVoice = async (text: string, voicevox: VoicevoxClient, preset_id: number, options: TtsOptions) => {
+const generateVoice = async (text: string, voicevox: VoicevoxEndpoint, preset_id: number, options: TtsOptions) => {
   const audioQuery = await voicevox.postAudioQueryFromPreset({
     text,
     preset_id,
@@ -25,7 +25,7 @@ const generateVoice = async (text: string, voicevox: VoicevoxClient, preset_id: 
   );
 };
 
-export const initializeBot = (token: string | undefined, voicevox: VoicevoxClient, options: TtsOptions) => {
+export const initializeBot = (token: string | undefined, voicevox: VoicevoxEndpoint, options: TtsOptions) => {
   if (token === undefined) {
     throw new Error('token undefined.');
   }
