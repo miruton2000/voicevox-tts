@@ -1,4 +1,4 @@
-import { ChildProcess, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import waitOn from 'wait-on';
 import { createRequestor } from "./http.request";
 import { createVoicevoxApplication } from "./voicevox.application";
@@ -19,7 +19,7 @@ const startEngine = (port: number) => {
   process.once('SIGINT', () => process.exit());
   process.once('SIGTERM', () => process.exit());
 
-  return new Promise<ChildProcess>((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     child.once('exit', (code) => {
       reject(new Error(`Engine exited with code ${code} before starting.`));
     });
@@ -31,7 +31,7 @@ const startEngine = (port: number) => {
     })
     .then(() => {
       child.removeAllListeners('exit');
-      resolve(child);
+      resolve(`http://localhost:${port}`);
     })
     .catch((err) => {
       child.kill();
@@ -41,11 +41,11 @@ const startEngine = (port: number) => {
 };
 
 export const initializeEngine = async (port: number) => {
-  await startEngine(port);
+  const baseUrl = await startEngine(port);
   
   const application = createVoicevoxApplication(
     createVoicevoxEndpoint(
-      createRequestor(`http://localhost:${port}`)
+      createRequestor(baseUrl)
     )
   );
 

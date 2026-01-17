@@ -14,8 +14,6 @@ export const createVoicevoxApplication = (endpoint: VoicevoxEndpoint) => {
   };
 
   return {
-    getPreset,
-
     speak: async (text: string, preset_id: number = 0) => {
       const preset = await getPreset(preset_id);
       
@@ -28,15 +26,15 @@ export const createVoicevoxApplication = (endpoint: VoicevoxEndpoint) => {
         speaker: preset.style_id
       }, audioQuery);
     },
-
+    
     registerPreset: async (preset: Preset) => {
       const presets = await endpoint.getPresets();
       const api = (
         presets.some((p) => p.id === preset.id)
-          ? endpoint.postUpdatePreset
-          : endpoint.postAddPreset
+        ? endpoint.postUpdatePreset
+        : endpoint.postAddPreset
       );
-
+      
       return api(preset);
     },
     
@@ -44,7 +42,8 @@ export const createVoicevoxApplication = (endpoint: VoicevoxEndpoint) => {
       const preset = await getPreset(preset_id);
       await endpoint.postInitializeSpeaker({ speaker: preset.style_id });
     },
-
+    
+    getPreset,
     endpoint,
   }
 };
