@@ -64,3 +64,14 @@ export type Speaker = {
 };
 
 //#endregion
+
+//#region Error Schema
+export type ValidationError = {
+  detail?: {
+    loc: (string | number)[];
+    msg: string;
+    type: string;
+  }[];
+};
+
+//#endregion
