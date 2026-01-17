@@ -36,9 +36,8 @@ voicevox-tts (root)
 
 ```.env
 DISCORD_TOKEN=your-discord-token # 必須 : BotのDiscord Token 
-ENGINE_PORT=port-number # 任意 : VOICEVOX Engineのポート番号 (default: 50021)
-ENGINE_SPEAKER=speaker-id # 任意 : VOICEVOXの話者を指定 (default: 1 = ずんだもん)
 OWNER_ID=your-user-id # 必須 : TTSを行いたいユーザーのID
+ENGINE_PORT=port-number # 任意 : VOICEVOX Engineのポート番号 (default: 50021)
 ```
 
 〇 `OWNER_ID`の取得方法
