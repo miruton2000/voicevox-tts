@@ -2,7 +2,7 @@ import { createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceCh
 import { Client, GatewayIntentBits, Message } from "discord.js";
 import { Readable } from "stream";
 import { TtsOptions } from "./ttsOptions";
-import { VoicevoxEndpoint } from "./voicevox.client";
+import { VoicevoxEndpoint } from "./voicevox.endpoint";
 
 const player = createAudioPlayer();
 

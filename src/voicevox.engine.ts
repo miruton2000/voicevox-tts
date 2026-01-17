@@ -1,7 +1,7 @@
 import { ChildProcess, spawn } from "node:child_process";
 import waitOn from 'wait-on';
 import { TtsOptions } from "./ttsOptions";
-import { createVoicevoxEndpoint } from "./voicevox.client";
+import { createVoicevoxEndpoint } from "./voicevox.endpoint";
 import PRESET from './voicevox.preset.json' with { key: "json" };
 import { Preset } from "./voicevox.types";
 
