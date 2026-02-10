@@ -9,7 +9,7 @@ import { Preset } from "./voicevox.types";
 const startEngine = (port: number) => {
   const child = spawn(
     'voicevox-engine/run.exe',
-    ['--port', String(port)],
+    ['--port', String(port), '--use_gpu'],
     { stdio: 'inherit' }
   );
 
@@ -42,7 +42,7 @@ const startEngine = (port: number) => {
 
 export const initializeEngine = async (port: number) => {
   const baseUrl = await startEngine(port);
-  
+
   const application = createVoicevoxApplication(
     createVoicevoxEndpoint(
       createRequestor(baseUrl)
